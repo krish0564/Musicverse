@@ -1,37 +1,60 @@
 import { useParams } from "react-router-dom";
-import { albumsData, assets, songsData } from "../assets/assets";
+import { assets } from "../assets/assets";
 import { useContext } from "react";
 import { PlayerContext } from "../context/PlayerConext";
+import Layout from "./layout/layout";
+import getAlbums from "../hooks/getAlbums";
+import useGetSongs from "../hooks/useGetSongs";
+import useMusicStore from "../store/musicStore";
 
 const DisplayAlbum = () => {
   const { id } = useParams(); // Get the album ID from the URL
-  const albumData = albumsData[id]; // Fetch the album data based on ID
+  const { loading: loadingAlbums, album } = getAlbums();
+  const { loading: loadingSongs, songs } = useGetSongs();
   const { playWithId } = useContext(PlayerContext);
 
+  const { setSongQueue } = useMusicStore();
+
+  // const handlePlay = (songId) => {
+  //   setSongQueue(songs.filter((song) => song.albumId === albumId));
+  //   playWithId(songId);
+  // };
+  // Convert `id` to a number if necessary
+  const albumId = parseInt(id, 10);
+
+  // Fetch the album data based on ID
+  const albumData = album.find((album) => album.id === albumId);
+
   // Check if albumData exists before rendering
+  if (loadingAlbums || loadingSongs) {
+    return <p>Loading...</p>;
+  }
+
   if (!albumData) {
-    return <div>Album not found</div>;
+    return <p>Album not found.</p>;
   }
 
   return (
-    <>
-      <div className="mt-10 flex gap-8 flex-col md:flex-row md:items-end ">
-        <img className="w-48 rounded" src={albumData.image} alt="" />
+    <Layout>
+      <div className="mt-3 flex gap-8 flex-col md:flex-row md:items-end">
+        <img
+          className="w-48 rounded"
+          src={albumData.albumCover}
+          alt={albumData.title}
+        />
         <div className="flex flex-col">
           <p>Playlist</p>
           <h2 className="text-5xl font-bold mb-4 md:text-7xl">
-            {albumData.name}
+            {albumData.title}
           </h2>
           <h4>{albumData.desc}</h4>
           <p className="mt-1">
             <img
               className="inline-block w-5"
               src={assets.spotify_logo}
-              alt=""
+              alt="Spotify Logo"
             />
-            <b>Spotify</b>
-            •45,356 likes • <b> 50 songs</b>
-            about 2 hr 3 min
+            <b>Spotify</b> • 45,356 likes • <b>50 songs</b> • about 2 hr 3 min
           </p>
         </div>
       </div>
@@ -41,28 +64,30 @@ const DisplayAlbum = () => {
         </p>
         <p>Album</p>
         <p className="hidden sm:block">Date Added</p>
-        <img className="m-auto w-4" src={assets.clock_icon} alt="" />
+        <img className="m-auto w-4" src={assets.clock_icon} alt="Clock Icon" />
       </div>
       <hr />
-      {songsData.map((item, index) => (
+      {songs.map((item, index) => (
         <div
-          onClick={() => {
-            playWithId(item.id);
-          }}
+          // onClick={handlePlay(item.id)}
           key={item.id}
           className="grid grid-cols-3 sm:grid-cols-4 gap-2 p-2 text-[#a7a7a7] hover:bg-[#ffffff2b] cursor-pointer"
         >
           <p className="text-white">
             <b className="mr-4 text-[#a7a7a7]">{index + 1}</b>
-            <img className="inline w-10  mr-5" src={item.image} alt="" />
-            {item.name}
+            <img
+              className="inline w-10  mr-5"
+              src={item.coverImage}
+              alt={item.title}
+            />
+            {item.title}
           </p>
-          <p className="text-[15px]">{albumData.name}</p>
+          <p className="text-[15px]">{albumData.title}</p>
           <p className="text-[15px] hidden sm:block">5 days ago</p>
-          <p className="text-[15px] text-center">{item.duration}</p>
+          <p className="text-[15px] text-center">{item.length}</p>
         </div>
       ))}
-    </>
+    </Layout>
   );
 };
 

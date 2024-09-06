@@ -27,8 +27,8 @@ router.post(
   ]),
   musicController.addSong
 );
-router.get("/album", protectRoutes, musicController.getTopAlbums);
-router.get("/album/:albumId", protectRoutes, musicController.getSongbyAlbums);
+router.get("/album", musicController.getTopAlbums);
+router.get("/album/:albumId", musicController.getSongbyAlbums);
 
 router.get("/artist", protectRoutes, musicController.getTopArtist);
 router.get("/artist/:artistId", protectRoutes, musicController.getSongbyArtist);

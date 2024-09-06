@@ -1,10 +1,11 @@
 /* eslint-disable react/no-unescaped-entities */
 import { useEffect } from "react";
-import { albumsData, songsData } from "../assets/assets";
+
 import useMusicStore from "../store/musicStore";
 import AlbumItem from "./Albumitem";
 
 import SongItem from "./SongItem";
+import Layout from "./layout/layout";
 
 const DisplayHome = () => {
   const { albums, fetchAlbums, loadingAlbums, error, songs, fetchSongs } =
@@ -22,8 +23,8 @@ const DisplayHome = () => {
   }, [fetchAlbums, fetchSongs]);
 
   if (loadingAlbums) return <p>Loading albums...</p>;
-  console.log(albums, songs);
-  if (error) return <p>Error: {error}</p>;
+  console.log(albums, songs, fetchAlbums);
+
   return (
     <>
       <div className="mb-4">
